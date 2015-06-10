@@ -136,6 +136,9 @@ public class CrawlConfig {
    * List of possible authentications needed by crawler
    */
   private List<AuthInfo> authInfos;
+  
+  
+  private int maxPagesPerDepth = -1;
 
   /**
    * Validates the configs specified by this instance.
@@ -415,6 +418,16 @@ public class CrawlConfig {
     this.authInfos = authInfos;
   }
 
+    public int getMaxPagesPerDepth() {
+        return maxPagesPerDepth;
+    }
+
+    public void setMaxPagesPerDepth(int maxPagesPerDepth) {
+        this.maxPagesPerDepth = maxPagesPerDepth;
+    }
+
+  
+  
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

@@ -33,24 +33,25 @@ public class BasicCrawlController {
   private static final Logger logger = LoggerFactory.getLogger(BasicCrawlController.class);
 
   public static void main(String[] args) throws Exception {
-    if (args.length != 2) {
+    /*if (args.length != 2) {
       logger.info("Needed parameters: ");
       logger.info("\t rootFolder (it will contain intermediate crawl data)");
       logger.info("\t numberOfCralwers (number of concurrent threads)");
       return;
-    }
+    }*/
 
     /*
      * crawlStorageFolder is a folder where intermediate crawl data is
      * stored.
      */
-    String crawlStorageFolder = args[0];
+    String crawlStorageFolder = "/Users/alice/Documents/WebCrawler";
+    
 
     /*
      * numberOfCrawlers shows the number of concurrent threads that should
      * be initiated for crawling.
      */
-    int numberOfCrawlers = Integer.parseInt(args[1]);
+    int numberOfCrawlers = 50;
 
     CrawlConfig config = new CrawlConfig();
 
@@ -66,13 +67,13 @@ public class BasicCrawlController {
      * You can set the maximum crawl depth here. The default value is -1 for
      * unlimited depth
      */
-    config.setMaxDepthOfCrawling(2);
+    config.setMaxDepthOfCrawling(3);
 
     /*
      * You can set the maximum number of pages to crawl. The default value
      * is -1 for unlimited number of pages
      */
-    config.setMaxPagesToFetch(1000);
+    config.setMaxPagesToFetch(-1);
 
     /**
      * Do you want crawler4j to crawl also binary data ?
@@ -97,7 +98,12 @@ public class BasicCrawlController {
      * rootFolder manually.
      */
     config.setResumableCrawling(false);
-
+    
+    
+    /*Config param that lets us set a max number of pages per crawl depth level.
+    Default value is -1 for unlimited number of pages per depth level*/
+    config.setMaxPagesPerDepth(5);
+    
     /*
      * Instantiate the controller for this crawl.
      */
@@ -111,14 +117,17 @@ public class BasicCrawlController {
      * URLs that are fetched and then the crawler starts following links
      * which are found in these pages
      */
-    controller.addSeed("http://www.ics.uci.edu/");
+    /*controller.addSeed("http://www.ics.uci.edu/");
     controller.addSeed("http://www.ics.uci.edu/~lopes/");
-    controller.addSeed("http://www.ics.uci.edu/~welling/");
-
+    controller.addSeed("http://www.ics.uci.edu/~welling/");*/
+    controller.addSeed("http://en.wikipedia.org/wiki/Computer_science");
+    
     /*
      * Start the crawl. This is a blocking operation, meaning that your code
      * will reach the line after this only when crawling is finished.
      */
     controller.start(BasicCrawler.class, numberOfCrawlers);
+    
+      
   }
 }

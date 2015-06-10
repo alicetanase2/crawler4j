@@ -394,6 +394,8 @@ public class WebCrawler implements Runnable {
                 if (robotstxtServer.allows(webURL)) {
                   webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
                   toSchedule.add(webURL);
+//                  logger.info("!!Scheduled to visit URL: {}", webURL.getURL());
+//                  logger.info("!!Scheduled to visit depth: {}", webURL.getDepth());
                 } else {
                   logger.debug("Not visiting: {} as per the server's \"robots.txt\" policy", webURL.getURL());
                 }

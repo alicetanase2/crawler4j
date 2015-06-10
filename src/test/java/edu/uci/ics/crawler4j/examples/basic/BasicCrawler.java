@@ -17,6 +17,7 @@
 
 package edu.uci.ics.crawler4j.examples.basic;
 
+import com.google.common.io.Files;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,11 @@ import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Yasser Ganjisaffar
@@ -33,7 +39,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class BasicCrawler extends WebCrawler {
 
   private static final Pattern IMAGE_EXTENSIONS = Pattern.compile(".*\\.(bmp|gif|jpg|png)$");
-
+ 
   /**
    * You should implement this function to specify whether the given url
    * should be crawled or not (based on your crawling logic).
@@ -47,7 +53,8 @@ public class BasicCrawler extends WebCrawler {
     }
 
     // Only accept the url if it is in the "www.ics.uci.edu" domain and protocol is "http".
-    return href.startsWith("http://www.ics.uci.edu/");
+    //return href.startsWith("http://www.ics.uci.edu/");
+    return true;
   }
 
   /**
@@ -74,10 +81,28 @@ public class BasicCrawler extends WebCrawler {
 
     if (page.getParseData() instanceof HtmlParseData) {
       HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-      String text = htmlParseData.getText();
+      String text = htmlParseData.getText();      
       String html = htmlParseData.getHtml();
       Set<WebURL> links = htmlParseData.getOutgoingUrls();
+//      for (WebURL link:links){
+//          System.out.println(link.getURL());
+//          
+//      }
+      
+      System.out.println("Target: " + url + " Source: " + parentUrl);
 
+      String hashedName = UUID.randomUUID() + ".txt";
+      
+        
+      String filename = "/Users/alice/Documents/WebCrawler/crawler4jStorage" + "/" + hashedName;
+        //System.out.println("Filename is:");
+        try {
+            Files.write(text.getBytes(), new File(filename));
+        } catch (IOException ex) {
+            Logger.getLogger(BasicCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      
+      
       logger.debug("Text length: {}", text.length());
       logger.debug("Html length: {}", html.length());
       logger.debug("Number of outgoing links: {}", links.size());
@@ -90,7 +115,7 @@ public class BasicCrawler extends WebCrawler {
         logger.debug("\t{}: {}", header.getName(), header.getValue());
       }
     }
-
+    
     logger.debug("=============");
   }
 }

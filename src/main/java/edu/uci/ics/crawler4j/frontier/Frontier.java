@@ -28,6 +28,7 @@ import com.sleepycat.je.Environment;
 import edu.uci.ics.crawler4j.crawler.Configurable;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.url.WebURL;
+import java.util.ArrayList;
 
 /**
  * @author Yasser Ganjisaffar
@@ -47,9 +48,12 @@ public class Frontier extends Configurable {
   protected boolean isFinished = false;
 
   protected long scheduledPages;
+  
+  protected List<Long> scheduledPagesLevels;
 
   protected Counters counters;
 
+  //DID not to the level filtering implementation for resumable crawling
   public Frontier(Environment env, CrawlConfig config) {
     super(config);
     this.counters = new Counters(env, config);
@@ -73,19 +77,60 @@ public class Frontier extends Configurable {
       } else {
         inProcessPages = null;
         scheduledPages = 0;
+        
+        scheduledPagesLevels = new ArrayList<>();
+        for (int i = 0; i <= config.getMaxDepthOfCrawling(); i++){
+           scheduledPagesLevels.add(new Long(0));
+        }
+        
       }
     } catch (DatabaseException e) {
       logger.error("Error while initializing the Frontier", e);
       workQueues = null;
     }
   }
+  
+  public boolean uniformDepth(List<WebURL> urls){
+      
+      boolean uniformityFlag = true;
+      int initialDepth = urls.get(0).getDepth();
+      
+       for (WebURL url : urls) {
+           if (url.getDepth() != initialDepth){
+               System.out.println("DIFFERENCE FOUND: " + initialDepth + " vs " + url.getDepth());
+               uniformityFlag = false;
+           }
+       }
+      
+       return uniformityFlag;
+      
+  }
 
   public void scheduleAll(List<WebURL> urls) {
     int maxPagesToFetch = config.getMaxPagesToFetch();
+    int maxPagesPerDepth = config.getMaxPagesPerDepth();
+    
     synchronized (mutex) {
       int newScheduledPage = 0;
+      int depthLevel = 0;
+      
+//      if (urls.size() > 0){
+//          if (uniformDepth(urls))
+//            System.out.println("ALL DEPTHS SAME");
+//      else
+//            System.out.println("FOUND THEM DIFFERENT");
+//      }
+      
+      if (urls.size() > 0){
+          depthLevel = urls.get(0).getDepth();
+      }
+      
       for (WebURL url : urls) {
-        if ((maxPagesToFetch > 0) && ((scheduledPages + newScheduledPage) >= maxPagesToFetch)) {
+        if ((maxPagesToFetch > 0) && ((scheduledPagesLevels.get(depthLevel) + newScheduledPage) >= maxPagesToFetch)) {
+          break;
+        }
+        
+        if ((maxPagesPerDepth > 0) && ((scheduledPagesLevels.get(depthLevel) + newScheduledPage) >= maxPagesPerDepth)) {
           break;
         }
 
@@ -97,7 +142,7 @@ public class Frontier extends Configurable {
         }
       }
       if (newScheduledPage > 0) {
-        scheduledPages += newScheduledPage;
+        scheduledPagesLevels.set(depthLevel, scheduledPagesLevels.get(depthLevel) + newScheduledPage);
         counters.increment(Counters.ReservedCounterNames.SCHEDULED_PAGES, newScheduledPage);
       }
       synchronized (waitingList) {
@@ -108,11 +153,16 @@ public class Frontier extends Configurable {
 
   public void schedule(WebURL url) {
     int maxPagesToFetch = config.getMaxPagesToFetch();
+    int maxPagesPerDepth = config.getMaxPagesPerDepth();
     synchronized (mutex) {
       try {
-        if (maxPagesToFetch < 0 || scheduledPages < maxPagesToFetch) {
+        int depthLevel = 0; 
+        depthLevel = url.getDepth();
+      
+        
+        if (maxPagesToFetch < 0 || ((scheduledPagesLevels.get(depthLevel) < maxPagesToFetch) && (scheduledPagesLevels.get(depthLevel) < maxPagesPerDepth))) {
           workQueues.put(url);
-          scheduledPages++;
+          scheduledPagesLevels.set(depthLevel, scheduledPagesLevels.get(depthLevel) + 1);
           counters.increment(Counters.ReservedCounterNames.SCHEDULED_PAGES);
         }
       } catch (DatabaseException e) {
