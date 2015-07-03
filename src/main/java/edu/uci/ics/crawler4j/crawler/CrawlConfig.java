@@ -139,6 +139,8 @@ public class CrawlConfig {
   
   
   private int maxPagesPerDepth = -1;
+  
+  private String crawlTextStorage;
 
   /**
    * Validates the configs specified by this instance.
@@ -424,6 +426,14 @@ public class CrawlConfig {
 
     public void setMaxPagesPerDepth(int maxPagesPerDepth) {
         this.maxPagesPerDepth = maxPagesPerDepth;
+    }
+
+    public String getCrawlTextStorage() {
+        return crawlTextStorage;
+    }
+
+    public void setCrawlTextStorage(String crawlTextStorage) {
+        this.crawlTextStorage = crawlTextStorage;
     }
 
   

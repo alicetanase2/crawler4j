@@ -39,7 +39,9 @@ import java.util.logging.Logger;
 public class BasicCrawler extends WebCrawler {
 
   private static final Pattern IMAGE_EXTENSIONS = Pattern.compile(".*\\.(bmp|gif|jpg|png)$");
- 
+  private String folderName;
+  
+  
   /**
    * You should implement this function to specify whether the given url
    * should be crawled or not (based on your crawling logic).
@@ -51,6 +53,11 @@ public class BasicCrawler extends WebCrawler {
     if (IMAGE_EXTENSIONS.matcher(href).matches()) {
       return false;
     }
+    
+    if (href.contains("wikipedia") && !href.contains("en")){
+        return false;
+    }
+        
 
     // Only accept the url if it is in the "www.ics.uci.edu" domain and protocol is "http".
     //return href.startsWith("http://www.ics.uci.edu/");
@@ -89,12 +96,12 @@ public class BasicCrawler extends WebCrawler {
 //          
 //      }
       
-      System.out.println("Target: " + url + " Source: " + parentUrl);
+//      System.out.println("Target: " + url + " Source: " + parentUrl);
 
       String hashedName = UUID.randomUUID() + ".txt";
       
         
-      String filename = "/Users/alice/Documents/WebCrawler/crawler4jStorage" + "/" + hashedName;
+      String filename = this.myController.getConfig().getCrawlTextStorage() + "/"+ hashedName;
         //System.out.println("Filename is:");
         try {
             Files.write(text.getBytes(), new File(filename));

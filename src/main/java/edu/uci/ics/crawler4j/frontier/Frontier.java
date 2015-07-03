@@ -89,7 +89,7 @@ public class Frontier extends Configurable {
       workQueues = null;
     }
   }
-  
+  // DEPRECATED
   public boolean uniformDepth(List<WebURL> urls){
       
       boolean uniformityFlag = true;
@@ -105,7 +105,8 @@ public class Frontier extends Configurable {
        return uniformityFlag;
       
   }
-
+// END OF DEPRECATED CODE
+  
   public void scheduleAll(List<WebURL> urls) {
     int maxPagesToFetch = config.getMaxPagesToFetch();
     int maxPagesPerDepth = config.getMaxPagesPerDepth();
