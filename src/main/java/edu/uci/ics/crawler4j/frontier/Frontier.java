@@ -89,23 +89,6 @@ public class Frontier extends Configurable {
       workQueues = null;
     }
   }
-  // DEPRECATED
-  public boolean uniformDepth(List<WebURL> urls){
-      
-      boolean uniformityFlag = true;
-      int initialDepth = urls.get(0).getDepth();
-      
-       for (WebURL url : urls) {
-           if (url.getDepth() != initialDepth){
-               System.out.println("DIFFERENCE FOUND: " + initialDepth + " vs " + url.getDepth());
-               uniformityFlag = false;
-           }
-       }
-      
-       return uniformityFlag;
-      
-  }
-// END OF DEPRECATED CODE
   
   public void scheduleAll(List<WebURL> urls) {
     int maxPagesToFetch = config.getMaxPagesToFetch();
@@ -115,13 +98,7 @@ public class Frontier extends Configurable {
       int newScheduledPage = 0;
       int depthLevel = 0;
       
-//      if (urls.size() > 0){
-//          if (uniformDepth(urls))
-//            System.out.println("ALL DEPTHS SAME");
-//      else
-//            System.out.println("FOUND THEM DIFFERENT");
-//      }
-      
+
       if (urls.size() > 0){
           depthLevel = urls.get(0).getDepth();
       }

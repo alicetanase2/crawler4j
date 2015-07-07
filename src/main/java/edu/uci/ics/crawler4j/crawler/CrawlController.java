@@ -465,50 +465,6 @@ public class CrawlController extends Configurable {
         frontier.finish();
     }
 
-//    public static void mergeFiles(File[] files, File mergedFile) {
-//
-//        FileWriter fstream = null;
-//        BufferedWriter out = null;
-//        try {
-//            fstream = new FileWriter(mergedFile, true);
-//            out = new BufferedWriter(fstream);
-//        } catch (IOException e1) {
-//            e1.printStackTrace();
-//        }
-//
-//        for (File f : files) {
-//            System.out.println("merging: " + f.getName());
-//            FileInputStream fis;
-//            try {
-//                fis = new FileInputStream(f);
-//                BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-//
-//                String aLine;
-//                while ((aLine = in.readLine()) != null) {
-//                    out.write(aLine);
-//                    out.newLine();
-//                }
-//
-//                in.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        try {
-//            out.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//    public static File[] getAllLogFiles() {
-//        File folder = new File("/Users/alice/Documents/WebCrawler/crawler4jStorage");
-//        File[] files = folder.listFiles();
-//
-//        return files;
-//    }
 
 
 }

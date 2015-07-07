@@ -54,7 +54,8 @@ public class BasicCrawler extends WebCrawler {
       return false;
     }
     
-    if (href.contains("wikipedia") && !href.contains("en")){
+    if (href.contains("wikipedia") && !href.contains("en.wikipedia")){
+
         return false;
     }
         
@@ -91,18 +92,10 @@ public class BasicCrawler extends WebCrawler {
       String text = htmlParseData.getText();      
       String html = htmlParseData.getHtml();
       Set<WebURL> links = htmlParseData.getOutgoingUrls();
-//      for (WebURL link:links){
-//          System.out.println(link.getURL());
-//          
-//      }
-      
-//      System.out.println("Target: " + url + " Source: " + parentUrl);
-
       String hashedName = UUID.randomUUID() + ".txt";
       
         
       String filename = this.myController.getConfig().getCrawlTextStorage() + "/"+ hashedName;
-        //System.out.println("Filename is:");
         try {
             Files.write(text.getBytes(), new File(filename));
         } catch (IOException ex) {

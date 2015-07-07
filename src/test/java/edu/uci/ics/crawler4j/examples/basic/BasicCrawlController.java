@@ -16,6 +16,9 @@
  */
 package edu.uci.ics.crawler4j.examples.basic;
 
+import edu.uci.ics.crawler4j.crawler.Settings;
+import edu.uci.ics.crawler4j.util.FileManager;
+import com.uwyn.jhighlight.tools.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +27,17 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import java.util.List;
 import java.util.Scanner;
 
 public class BasicCrawlController {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicCrawlController.class);
-    static String crawlStorageFolder = "/Users/alice/Documents/WebCrawler";
-    static String crawlTextStorage = "/Users/alice/Documents/WebCrawler/crawler4jStorage";
-    
+
     public static void main(String[] args) throws Exception {
+        Settings settings = new Settings();
+        String crawlStorageFolder = settings.getProperty("general_storage");
+        String crawlTextStorage = settings.getProperty("text_storage");
         /*if (args.length != 2) {
          logger.info("Needed parameters: ");
          logger.info("\t rootFolder (it will contain intermediate crawl data)");
@@ -52,11 +57,14 @@ public class BasicCrawlController {
          * be initiated for crawling.
          */
         int numberOfCrawlers = 700;
-        
+
+        FileManager fileManager = new FileManager();
+        fileManager.clearDirectory(crawlTextStorage);
+
         CrawlConfig config = new CrawlConfig();
-        
+
         config.setCrawlStorageFolder(crawlStorageFolder);
-        
+
         config.setCrawlTextStorage(crawlTextStorage);
 
         /*
@@ -123,19 +131,27 @@ public class BasicCrawlController {
          * URLs that are fetched and then the crawler starts following links
          * which are found in these pages
          */
-        /*controller.addSeed("http://www.ics.uci.edu/");
-         controller.addSeed("http://www.ics.uci.edu/~lopes/");
-         controller.addSeed("http://www.ics.uci.edu/~welling/");*/
-        System.out.println("Enter a seed URL: ");
+
+        System.out.println("Enter a seed URL or path to file containing seed URLs: ");
+
         bufferInput = input.nextLine().trim();
-        controller.addSeed(bufferInput);
+        if (bufferInput.contains("http")) {
+            controller.addSeed(bufferInput);
+        } else {
+            List<String> seedURLs = fileManager.extractURLs(bufferInput);
+
+            for (String seedURL : seedURLs) {
+                controller.addSeed(seedURL);
+            }
+
+        }
 
         /*
          * Start the crawl. This is a blocking operation, meaning that your code
          * will reach the line after this only when crawling is finished.
          */
         controller.start(BasicCrawler.class, numberOfCrawlers);
-        
+
     }
-    
+
 }
